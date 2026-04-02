@@ -101,14 +101,6 @@ http://127.0.0.1:8000
 
 ---
 
-## 📈 Future Improvements
-
-- Multi-document comparison
-- Highlight answers in text
-- Chat history memory
-- Better AI response generation
-
----
 
 ## 📄 License
 
