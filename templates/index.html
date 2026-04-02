@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DocuMind AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script defer src="/static/script.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="logo">DocuMind AI</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+
+    <h1 class="hero-title">
+        Understand Your Data Instantly
+    </h1>
+
+    <!-- Upload Card -->
+    <div class="upload-card">
+        <div class="upload-icon">⬆️</div>
+        <h3>Upload Documents</h3>
+        <p>PDF, TXT supported</p>
+        <input type="file" id="fileInput" multiple>
+    </div>
+
+</section>
+
+<!-- CHAT -->
+<div class="chat-container" id="chat"></div>
+
+<!-- INPUT -->
+<div class="input-container">
+    <input type="text" id="question" placeholder="Ask something...">
+    <button onclick="sendQuestion()">→</button>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    Built by <span>Anurag Sharma</span>
+</footer>
+
+</body>
+</html>

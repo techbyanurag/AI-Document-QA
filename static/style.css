@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:wght@600&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #050505;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+/* NAV */
+.nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 20px 40px;
+    backdrop-filter: blur(30px);
+    background: rgba(0,0,0,0.4);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.logo {
+    font-weight: 500;
+}
+
+/* HERO */
+.hero {
+    text-align: center;
+    margin-top: 140px;
+}
+
+/* GRADIENT TITLE */
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    line-height: 1.2;
+
+    background: linear-gradient(to bottom right, #ffffff, rgba(255,255,255,0.4));
+    background-clip: text;
+    -webkit-background-clip: text;
+
+    color: transparent;
+}
+
+/* UPLOAD CARD */
+.upload-card {
+    margin: auto;
+    margin-top: 40px;
+    width: 320px;
+    padding: 25px;
+    text-align: center;
+
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 20px;
+
+    backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.02);
+}
+
+.upload-card:hover {
+    border-color: rgba(255,255,255,0.2);
+}
+
+/* ICON */
+.upload-icon {
+    width: 48px;
+    height: 48px;
+    margin: auto 0 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+    background: rgba(255,255,255,0.05);
+}
+
+/* TEXT */
+.upload-card h3 {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.upload-card p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+}
+
+/* FILE INPUT */
+.upload-card input {
+    margin-top: 15px;
+    color: rgba(255,255,255,0.6);
+}
+
+/* CHAT */
+.chat-container {
+    width: 55%;
+    margin: 60px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 140px;
+}
+
+/* USER MSG */
+.user-msg {
+    align-self: flex-end;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 12px 20px;
+    border-radius: 30px;
+    max-width: 70%;
+}
+
+/* AI MSG */
+.ai-msg {
+    align-self: flex-start;
+    max-width: 75%;
+    color: rgba(255,255,255,0.75);
+}
+
+/* INPUT */
+.input-container {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55%;
+    display: flex;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 50px;
+
+    backdrop-filter: blur(30px);
+    background: rgba(255,255,255,0.02);
+
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.input-container input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+}
+
+/* BUTTON */
+button {
+    background: white;
+    color: black;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    border: none;
+    cursor: pointer;
+}
+
+/* FOOTER */
+.footer {
+    position: fixed;
+    bottom: 12px;
+    right: 20px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+}
+
+.footer span {
+    color: rgba(255,255,255,0.6);
+}
