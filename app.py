@@ -6,26 +6,29 @@ from fastapi.templating import Jinja2Templates
 import os
 import shutil
 
-# LangChain imports
+# LangChain
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
+# Local LLM (NO API)
+from transformers import pipeline
+
 app = FastAPI()
 
 UPLOAD_FOLDER = "uploads"
 
-# Create uploads folder if not exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Global storage
 vector_store = None
-chat_history = []
+
+# 🔥 Load local GenAI model (first time will download ~1-2GB)
+generator = pipeline("text2text-generation", model="google/flan-t5-base")
 
 
 # 🏠 Home
@@ -34,102 +37,103 @@ async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-# 📁 Upload + Process Documents
+# 📁 Upload
 @app.post("/upload")
 async def upload(files: list[UploadFile] = File(...)):
-    global vector_store, chat_history
-
-    # ✅ FIX: clear memory when new document uploaded
-    chat_history = []
+    global vector_store
 
     all_docs = []
 
     for file in files:
         file_path = os.path.join(UPLOAD_FOLDER, file.filename)
 
-        # Save file
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # Load file content
         if file.filename.endswith(".pdf"):
             loader = PyPDFLoader(file_path)
             docs = loader.load()
+            os.remove(file_path)
 
         elif file.filename.endswith(".txt"):
             loader = TextLoader(file_path)
             docs = loader.load()
+            os.remove(file_path)
 
         else:
             return {"message": "Unsupported file format"}
 
-        # Delete file after reading
-        os.remove(file_path)
-
-        print("Loaded docs:", len(docs))
-
         all_docs.extend(docs)
 
-    # Safety check
     if len(all_docs) == 0:
-        return {"message": "No readable content found in document"}
+        return {"message": "No content found"}
 
-    # Split text into chunks
     splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     texts = splitter.split_documents(all_docs)
 
-    if len(texts) == 0:
-        return {"message": "Text extraction failed"}
-
-    # Embeddings
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-    # Create vector store
+    # Reset for new docs
     vector_store = FAISS.from_documents(texts, embeddings)
 
     return {"message": "Documents processed successfully"}
 
 
-# ❓ Ask Question (with memory)
+# ❓ Ask (LOCAL GEN AI)
 @app.post("/ask")
 async def ask(question: str):
-    global vector_store, chat_history
+    global vector_store
 
     if vector_store is None:
-        return {"answer": "Please upload documents first", "confidence": "0%"}
+        return {"answer": "Upload document first", "confidence": "0%"}
 
     docs = vector_store.similarity_search(question, k=3)
 
     if len(docs) == 0:
-        return {"answer": "No relevant information found", "confidence": "0%"}
+        return {"answer": "No relevant info found", "confidence": "0%"}
 
-    # Combine context
-    context = ""
-    for doc in docs:
-        context += doc.page_content + "\n"
+    context = "\n".join([doc.page_content for doc in docs])
 
-    # Include last 3 Q&A for memory
-    history_text = ""
-    for q, a in chat_history[-3:]:
-        history_text += f"Q: {q}\nA: {a}\n"
+    # 🔥 Prompt for GenAI
+    prompt = f"""
+    Answer the question based only on the context below.
 
-    # Generate answer
-    answer = f"""
-Previous conversation:
-{history_text}
+    Context:
+    {context}
 
-Answer based on document:
+    Question:
+    {question}
 
-{context[:400]}
+    Answer:
+    """
 
-Summary:
-This response is generated using the uploaded document and recent context.
-"""
+    result = generator(prompt, max_length=200, do_sample=False)
 
-    # Save to memory
-    chat_history.append((question, answer))
+    answer = result[0]["generated_text"]
+
+    confidence = f"{min(90, 60 + len(docs)*10)}%"
+    sources = [doc.page_content[:120] for doc in docs]
 
     return {
         "answer": answer,
-        "confidence": "92%"
+        "confidence": confidence,
+        "sources": sources
     }
+
+
+# 📊 Summarize
+@app.post("/summarize")
+async def summarize():
+    global vector_store
+
+    if vector_store is None:
+        return {"summary": "Upload documents first"}
+
+    docs = vector_store.similarity_search("", k=5)
+    text = " ".join([d.page_content for d in docs])[:1500]
+
+    prompt = f"Summarize this:\n{text}"
+
+    result = generator(prompt, max_length=150, do_sample=False)
+
+    return {"summary": result[0]["generated_text"]}
