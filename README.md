@@ -84,6 +84,14 @@ http://127.0.0.1:8000
 4. View the AI-generated answer
 
 ---
+🧠 Project Type
+
+This is a Hybrid AI System:
+
+🔹 NLP → Text processing, embeddings, semantic search
+🔹 GenAI → Answer generation using a local language model
+
+---
 
 ## 🎨 UI Design
 
