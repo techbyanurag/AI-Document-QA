@@ -2,3 +2,14 @@ fastapi
 uvicorn
 python-multipart
 jinja2
+
+langchain
+langchain-community
+
+faiss-cpu
+sentence-transformers
+pypdf
+
+transformers
+torch
+accelerate
